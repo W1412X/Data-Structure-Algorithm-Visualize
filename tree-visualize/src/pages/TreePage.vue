@@ -87,7 +87,7 @@ export default {
                 window.alert("输入节点格式必须是数字")
                 return;
             }
-            this.tree.removeChild(val);
+            this.tree.removeChild(this.valIdDict[val]);
         },
         /* 传入自定义的node
          * 返回设置固定样式的node
