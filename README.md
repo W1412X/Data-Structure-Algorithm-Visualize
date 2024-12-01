@@ -30,3 +30,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 - 使用的G6 4.x的库  
 
 ### 算法放在 @/algorithm 中实现  
+
+### G6地址  
+https://g6-v4.antv.vision/manual/introduction
