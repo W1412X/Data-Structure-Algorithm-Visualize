@@ -9,10 +9,10 @@
                 style="border-radius: 10px;border: 2px #8a8a8a solid;width: 1200px; height: 800px;margin-right: 20px;">
             </div>
             <div style="display: flex;flex-direction: column;margin-right: 20px;width: 200px;">
-                <v-select variant="outlined" v-model="algorithm" label="树结构" density="compact" 
+                <v-select variant="outlined" v-model="algorithm" label="选择算法" density="compact" 
                      style="max-height: 60px;"
-                    :items="['TEST']"></v-select>
-                <v-text-field v-model="nodeValueToAdd" style="max-height: 60px;" single-line label="输入节点ID"
+                    :items="['二叉排序树的构建']"></v-select>
+                <v-text-field v-model="nodeValueToAdd" style="max-height: 60px;" single-line label="输入节点权值"
                     variant="outlined" density="compact"></v-text-field>
                 <v-btn @click="handleAddClicked" style="max-height: 60px;margin: 5px;" variant="tonal">插入节点</v-btn>
                 <v-btn @click="handleDeleteClicked" style="max-height: 60px; margin: 5px;" variant="tonal">删除节点</v-btn>
@@ -24,6 +24,7 @@
 <script>
 import G6 from '@antv/g6';
 import { isNumericString } from '@/utils/funcs';
+import { SortTree } from '@/algorithm/SortTree';
 export default {
     name: 'TreeGraph',
     setup(){
@@ -31,6 +32,11 @@ export default {
     },
     data(){
         return {
+            /* 一个算法类
+             * 传入图对象，对图的操作再算法中实现
+             * 提供算法的操作接口
+             */
+            tree:null,
             algorithm:null,
             /* id迭代
              */
@@ -55,64 +61,42 @@ export default {
         /* 监听添加按钮
          */
         handleAddClicked(){
+            if(this.algorithm==null){
+                window.alert("选择一个算法")
+            }
             const val=this.nodeValueToAdd;
             this.nodeValueToAdd="";
             if(!isNumericString(val)){
                 window.alert("输入节点格式必须是数字")
                 return;
             }
-            /* 如果第一次启动
-             */
-            this.idCounter++;
-            this.valIdDict[val]=this.idCounter;
-            
-            if(this.idCounter==1){
-                this.data={
-                    id:String(this.idCounter),
-                    val:val,
-                    children:[]
-                }
-                this.tree.data(this.data);
-                this.tree.render();
-                this.tree.fitView();
-            }
-            /* 待完善，需要给出子树和父节点  
-             */
-            this.tree.addChild({id:String(this.idCounter),val:val,children:[]},"1")
+            this.tree.push(String(val));
         },
         handleDeleteClicked(){
-            const val=this.nodeValueToAdd;
-            this.nodeValueToAdd="";
-            if(!isNumericString(val)){
-                window.alert("输入节点格式必须是数字")
-                return;
-            }
-            this.tree.removeChild(this.valIdDict[val]);
+            window.alert("未实现")
         },
         /* 传入自定义的node
          * 返回设置固定样式的node
          */
-        convertNode(node){
+        convertNode(node) {
             return {
-            size: 16,
-            style: {
-            },
-            state:{
-                focus:{
-                    lineWidth:"2",
-                    stroke:"orange"
-                }
-            },
-            label:node.val,
-            labelCfg: {
-                position: node.children && node.children.length > 0 ? 'left' : 'right',
-                fontSize:1
-            },
-            animation: {
-                enter:"fade",
-                exit:"fade"
-            },
-        }
+                size: 16,
+                style: {
+                    stroke:node.vis?"#eff4ff":"#00000000",
+                    fill:node.vis?"#5f95ff":"#00000000"
+                },
+                state: {
+                    focus: {
+                        lineWidth: "2",
+                        stroke: "orange"
+                    }
+                },
+                label: node.vis?node.val:" ",
+                labelCfg: {
+                    position: "left",
+                    fontSize: 1
+                },
+            }
         },
         /* 传入自定义的edge
          * 返回设置固定样式的edge
@@ -122,10 +106,10 @@ export default {
         }
     },
     mounted() {
-        this.tree= new G6.TreeGraph({
+        this.TreeGraph= new G6.TreeGraph({
             container: 'mountNode',
-            width: this.$el.offsetWidth,
-            height: this.$el.offsetHeight,
+            width: 1200,
+            height: 800,
             pixelRatio: 2,
             modes: {
                 default: [
@@ -148,12 +132,17 @@ export default {
                 getHeight: () => 16,
                 getWidth: () => 16,
                 getVGap: () => 10,
-                getHGap: () => 100,
+                getHGap: () => 20,
+            },
+            animate:true,
+            animateCfg: {
+                duration: 500, // Number，一次动画的时长
+                easing: 'easeLinear', // String，动画函数
             },
         });
 
-        this.tree.node((node) => (this.convertNode(node)));
-        this.tree.edge(()=>({
+        this.TreeGraph.node((node) => (this.convertNode(node)));
+        this.TreeGraph.edge(()=>({
             type: 'line',
             style: {
                 stroke:"#8a8a8a",
@@ -163,11 +152,8 @@ export default {
 
             },
             palette: {},
-            animation: {
-                enter:"fade",
-                exit:"fade"
-            },
         }));
+        this.tree=new SortTree(this.TreeGraph)
     },
 };
 </script>
