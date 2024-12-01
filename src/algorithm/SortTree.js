@@ -115,7 +115,7 @@ export class SortTree{
                             JSON.parse(JSON.stringify(node_now.children[0])),
                             JSON.parse(JSON.stringify(node_now.children[1]))
                         ],node_now.id);
-                        this.treeGraph.updateItem(node_now.children[0].id,node_now.children[1])
+                        this.treeGraph.updateItem(node_now.children[1].id,node_now.children[1])
                         break;
                     }else if(Number(val)<=Number(node_now.val)){
                         node_now=node_now.children[0];
