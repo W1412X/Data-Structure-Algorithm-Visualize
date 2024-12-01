@@ -63,6 +63,7 @@ export default {
         handleAddClicked(){
             if(this.algorithm==null){
                 window.alert("选择一个算法")
+                return;
             }
             const val=this.nodeValueToAdd;
             this.nodeValueToAdd="";
