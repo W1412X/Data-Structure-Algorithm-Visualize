@@ -134,6 +134,54 @@ export function getFatherById(root,id){
 }
 
 /**
+ * 通过id获取其父节点
+ * 如果id是根节点，则返回"root"
+ * 否则返回父节点的一个引用
+ * 没有找到返回null
+ */
+export function getFatherByIdRefer(root,id){
+    if(root.id==id){
+        return "root";
+    }
+    for(let i=0;i<root.children.length;i++){
+        if(root.children[i].id==id){
+            return root;
+        }
+    }
+    for(let i=0;i<root.children.length;i++){
+        var tmp_node=getFatherByIdRefer(root.children[i],id);
+        if(tmp_node==null){
+            continue;
+        }else{
+            return tmp_node;
+        }
+    }
+    return null;
+}
+
+
+/**
+ * 从树数据结构中获取一个id对应的节点
+ * 返回一个节点的引用  
+ */
+export function getNodeByIdRefer(root,id){
+    if(root.id==id){
+        return root;
+    }else{
+        for(var i=0;i<root.children.length;i++){
+            var tmp_node=getNodeByIdRefer(root.children[i],id);
+            if(tmp_node==null){
+                continue;
+            }else{
+                return tmp_node;
+            }
+        }
+    }
+    return null;
+}
+
+
+/**
  * 获取最小的节点的id
  */
 export function getMinNodeId(root){
