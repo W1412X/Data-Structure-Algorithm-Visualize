@@ -79,6 +79,14 @@ export default {
             this.tree.push(String(val));
         },
         handleDeleteClicked(){
+            if(this.algorithm==null){
+                window.alert("选择一个算法")
+                return;
+            }
+            if(this.tree.root==null){
+                window.alert("没有数据")
+                return;
+            }
             this.tree.pop_min();
         },
     },
