@@ -22,8 +22,7 @@
 </template>
 
 <script>
-import G6 from '@antv/g6';
-import { isNumericString } from '@/utils/funcs';
+import { getTreeGraph, isNumericString } from '@/utils/funcs';
 import { SortTree } from '@/algorithm/SortTree';
 export default {
     name: 'TreeGraph',
@@ -32,25 +31,30 @@ export default {
     },
     data(){
         return {
-            /* 一个算法类
+            /**
+             * 一个算法类
              * 传入图对象，对图的操作再算法中实现
              * 提供算法的操作接口
              */
             tree:null,
             algorithm:null,
-            /* id迭代
+            /**
+             * id迭代
              */
             idCounter:0,
-            /* 因为id必须保持唯一
+            /**
+             * 因为id必须保持唯一
              * 所以这里设置一个字典，用于查询id节点对应的val
              * 其中id自动迭代，val为用户输入
              */
             valIdDict:{},
-            /* 已经添加的节点
+            /** 
+             * 已经添加的节点
              */
             addIds:[],
             nodeIdAdded:[],
-            /* 绑定待添加的节点输入
+            /**
+             * 绑定待添加的节点输入
              */
             nodeValueToAdd:null,
             data:{
@@ -58,7 +62,8 @@ export default {
         }
     },
     methods:{
-        /* 监听添加按钮
+        /**
+         * 监听添加按钮
          */
         handleAddClicked(){
             if(this.algorithm==null){
@@ -74,87 +79,11 @@ export default {
             this.tree.push(String(val));
         },
         handleDeleteClicked(){
-            window.alert("未实现")
+            this.tree.pop_min();
         },
-        /* 传入自定义的node
-         * 返回设置固定样式的node
-         */
-        convertNode(node) {
-            return {
-                size: 16,
-                style: {
-                    stroke:node.vis?"#eff4ff":"#00000000",
-                    fill:node.vis?"#5f95ff":"#00000000"
-                },
-                state: {
-                    focus: {
-                        lineWidth: "2",
-                        stroke: "orange"
-                    }
-                },
-                label: node.vis?node.val:" ",
-                labelCfg: {
-                    position: "left",
-                    fontSize: 1
-                },
-            }
-        },
-        /* 传入自定义的edge
-         * 返回设置固定样式的edge
-         */
-        convertEdge(edge){
-            console.log(edge);
-        }
     },
     mounted() {
-        this.TreeGraph= new G6.TreeGraph({
-            container: 'mountNode',
-            width: 1200,
-            height: 800,
-            pixelRatio: 2,
-            modes: {
-                default: [
-                    {
-                        type: 'collapse-expand',
-                        onChange: function (item, collapsed) {
-                            const nodeData = item.get('model').data;
-                            nodeData.collapsed = collapsed;
-                            return true;
-                        },
-                    },
-                    'drag-canvas',
-                    'zoom-canvas',
-                ],
-            },
-            layout: {
-                type: 'compactBox',
-                direction: 'TB',
-                getId: (d) => d.id,
-                getHeight: () => 16,
-                getWidth: () => 16,
-                getVGap: () => 10,
-                getHGap: () => 20,
-            },
-            animate:true,
-            animateCfg: {
-                duration: 500, // Number，一次动画的时长
-                easing: 'easeLinear', // String，动画函数
-            },
-        });
-
-        this.TreeGraph.node((node) => (this.convertNode(node)));
-        this.TreeGraph.edge(()=>({
-            type: 'line',
-            style: {
-                stroke:"#8a8a8a",
-                lineWidth:1
-            },
-            state: {
-
-            },
-            palette: {},
-        }));
-        this.tree=new SortTree(this.TreeGraph)
+        this.tree=new SortTree(getTreeGraph());
     },
 };
 </script>
