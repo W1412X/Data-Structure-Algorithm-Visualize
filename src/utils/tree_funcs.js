@@ -1,3 +1,6 @@
+/**
+ * 一个提供关于树辅助函数的文件
+ */
 export function isNumericString(str) {
     if (typeof str !== 'string') return false; // 确保输入是字符串
     return /^-?[0-9]+$/.test(str); // 支持负号的正则表达式;

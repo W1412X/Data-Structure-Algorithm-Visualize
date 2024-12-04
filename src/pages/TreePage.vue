@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { getTreeGraph, isNumericString } from '@/utils/funcs';
+import { getTreeGraph, isNumericString } from '@/utils/tree_funcs';
 import { SortTree } from '@/algorithm/SortTree';
 export default {
     name: 'TreeGraph',

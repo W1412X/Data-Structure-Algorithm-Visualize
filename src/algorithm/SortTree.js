@@ -1,6 +1,6 @@
 //import { delay } from "@/utils/funcs";
 
-import { copy, getFatherById, getFatherByIdRefer, getMinNodeId, getNodeById, getTreeGraph } from "@/utils/funcs";
+import { copy, getFatherById, getFatherByIdRefer, getMinNodeId, getNodeById, getTreeGraph } from "@/utils/tree_funcs";
 
 //import { convertNode } from "@/utils/funcs";
 
