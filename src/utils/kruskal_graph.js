@@ -8,6 +8,7 @@ class GraphDraw {
     this.drawStack = [];
     this.UNSELECTED_COLOR = "#aaaaaa";
     this.SELECTED_COLOR = "#00804b";
+    this.UNVISIT_COLOR="#89CFF0"
     this.graph = this.createGraph(containerId);
   }
 
@@ -103,18 +104,30 @@ class GraphDraw {
   }
 
   convertEdge(edge){
+    var edgeColor =null;
+    switch(edge.selectState){
+      case 0:
+        edgeColor=this.UNVISIT_COLOR;
+        break;
+      case 1:
+        edgeColor=this.SELECTED_COLOR;
+        break;
+      case 2:
+        edgeColor=this.UNSELECTED_COLOR;
+        break;
+    }
     return{
       source:edge.source,
       target:edge.target,
       type: 'line',
       style: {
-        stroke: edge.selectState?this.SELECTED_COLOR:this.UNSELECTED_COLOR,
+        stroke: edgeColor,
         lineWidth: 3,
       },
       label:edge.val,
       labelCfg:{
         style:{
-          fill: edge.selectState?this.SELECTED_COLOR:this.UNSELECTED_COLOR,
+          fill: edgeColor,
           fontWeight:'bold',
           fontSize:'20px',
         },
@@ -129,7 +142,7 @@ class GraphDraw {
   convertNode(node) {
     return {
       type: 'dom-node',
-      stateColor: node.selectState?this.SELECTED_COLOR:this.UNSELECTED_COLOR,
+      stateColor: node.selectState?this.SELECTED_COLOR:this.UNVISIT_COLOR,
       size: [120, 60],
       root: node.id,
       id: node.id
@@ -162,13 +175,13 @@ class GraphDraw {
   }
   // 添加边
   addEdge(source, target,val) {
-    this.graph.addItem("edge", { source: source, target: target,selectState:false,val:val });
-    this.edges.push({ source: source, target: target,selectState:false,val:val });
-    this.drawStack.push({ type: "edge", edge: { source: source, target: target,selectState:false,val:val } });
+    this.graph.addItem("edge", { source: source, target: target,selectState:0,val:val });
+    this.edges.push({ source: source, target: target,selectState:0,val:val });
+    this.drawStack.push({ type: "edge", edge: { source: source, target: target,selectState:0,val:val } });
   }
   /**
-   * 在kruskal算法中，所有的边分为两种 已选中和未选中
-   * 传入参数ture/false 代表选中/未选中
+   * 在kruskal算法中，所有的边分为3种 已选中,未访问，访问未选中
+   * 传入参数1，0，2 代表选中/未访问/访问未选中
    * {
    *  source
    *  target

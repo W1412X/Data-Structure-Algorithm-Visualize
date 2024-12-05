@@ -56,10 +56,12 @@ export class Kruskal{
         }else{
             var edge=this.edges.pop();
             if(this.find(edge.source)==this.find(edge.target)){
+                edge.selectState=2;
+                this.graphDraw.setEdge(copy(edge));
                 return true;
             }else{
                 this.combine(edge.source,edge.target);
-                edge.selectState=true;
+                edge.selectState=1;
                 this.nodes[edge.source].selectState=true;
                 this.nodes[edge.target].selectState=true;
                 this.added_edges.push(copy(edge));
