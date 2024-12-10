@@ -1,3 +1,5 @@
+// @/utils/kruskal_graph.js
+/* eslint-disable */
 import G6 from '@antv/g6';
 
 class GraphDraw {
@@ -8,7 +10,7 @@ class GraphDraw {
     this.drawStack = [];
     this.UNSELECTED_COLOR = "#aaaaaa";
     this.SELECTED_COLOR = "#00804b";
-    this.UNVISIT_COLOR="#89CFF0"
+    this.UNVISIT_COLOR = "#89CFF0";
     this.graph = this.createGraph(containerId);
   }
 
@@ -31,22 +33,22 @@ class GraphDraw {
   createGraph(containerId) {
     G6.registerNode('dom-node', {
       draw: (cfg, group) => {
+        const distanceText = cfg.distance !== null && cfg.distance !== undefined ? `距离: ${cfg.distance}` : '';
         const shape = group.addShape('dom', {
           attrs: {
             width: cfg.size[0],
             height: cfg.size[1],
             html: `
-            <div id=${cfg.id} class='dom-node' style="background-color: #fff; border: 2px solid ${cfg.stateColor}; border-radius: 5px; width: ${cfg.size[0] - 5}px; height: ${cfg.size[1] - 5}px; display: flex;">
-              <div style="display:flex;flex-direction:column;height: 100%; width: 30%; background-color: ${cfg.stateColor};justify-content:center;">
-                <div style="display:flex;flex-direction:row;justify-content:center;">
-                    <span style="font-size:25px;font-weight:bold;color:#ffffff;">${cfg.id}</span>
-                </div>
+            <div id=${cfg.id} class='dom-node' style="background-color: #fff; border: 2px solid ${cfg.stateColor}; border-radius: 5px; width: ${cfg.size[0] - 5}px; height: ${cfg.size[1] - 5}px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <div style="display:flex;flex-direction:row;justify-content:center; width: 100%;">
+                <span style="font-size:18px;font-weight:bold;color:#ffffff; background-color: ${cfg.stateColor}; padding: 5px; border-radius: 3px;">${cfg.id}</span>
               </div>
-              <div style="display:flex;flex-direction:column;margin:auto; padding:auto; color: #5B8FF9;justify-content:center;">
-                <div style="font-size:18px;color:#000000;">root:${cfg.root}</div>
+              <div style="display:flex;flex-direction:column;justify-content:center; align-items: center; margin-top: 5px;">
+                <div style="font-size:14px;color:#000000;">root:${cfg.root}</div>
+                ${distanceText ? `<div style="font-size:14px;color:#000000;">${distanceText}</div>` : ''}
               </div>
             </div>
-          `,
+            `,
           },
           draggable: true,
         });
@@ -91,45 +93,47 @@ class GraphDraw {
       graph.addItem("node", model);
       this.drawStack.push({ type: "node", id: model.id});
       this.nodes.push(model.id);
+      // 触发自定义事件，通知外部更新节点列表
+      graph.emit('node:added');
     });
 
     graph.node((node) => {
       return this.convertNode(node);
     });
-    graph.edge((edge)=>{
+    graph.edge((edge) => {
       return this.convertEdge(edge);
-    })
+    });
 
     return graph;
   }
 
   convertEdge(edge){
-    var edgeColor =null;
+    var edgeColor = null;
     switch(edge.selectState){
       case 0:
-        edgeColor=this.UNVISIT_COLOR;
+        edgeColor = this.UNVISIT_COLOR;
         break;
       case 1:
-        edgeColor=this.SELECTED_COLOR;
+        edgeColor = this.SELECTED_COLOR;
         break;
       case 2:
-        edgeColor=this.UNSELECTED_COLOR;
+        edgeColor = this.UNSELECTED_COLOR;
         break;
     }
-    return{
-      source:edge.source,
-      target:edge.target,
+    return {
+      source: edge.source,
+      target: edge.target,
       type: 'line',
       style: {
         stroke: edgeColor,
         lineWidth: 3,
       },
-      label:edge.val,
+      label: edge.val,
       labelCfg:{
         style:{
           fill: edgeColor,
           fontWeight:'bold',
-          fontSize:'20px',
+          fontSize:'14px', // 调整字体大小
         },
         refX:10,
         refY:10
@@ -138,14 +142,21 @@ class GraphDraw {
       palette: {},
     }
   }
+
   // 转换节点格式
   convertNode(node) {
+    let displayDistance = '';
+    if (node.distance !== undefined && node.distance !== null) {
+      displayDistance = `距离: ${node.distance}`;
+    }
     return {
       type: 'dom-node',
-      stateColor: node.selectState?this.SELECTED_COLOR:this.UNVISIT_COLOR,
-      size: [120, 60],
-      root: node.id,
-      id: node.id
+      stateColor: node.selectState ? this.SELECTED_COLOR : this.UNVISIT_COLOR,
+      size: [120, 80], // 增加节点高度
+      root: node.root !== undefined ? node.root : node.id,
+      id: node.id,
+      distance: node.distance !== undefined ? node.distance : null,
+      label: node.distance !== undefined ? `root:${node.root}\n距离:${node.distance}` : `root:${node.root}`,
     };
   }
 
@@ -173,12 +184,14 @@ class GraphDraw {
     }
     return true;
   }
+  
   // 添加边
-  addEdge(source, target,val) {
-    this.graph.addItem("edge", { source: source, target: target,selectState:0,val:val });
-    this.edges.push({ source: source, target: target,selectState:0,val:val });
-    this.drawStack.push({ type: "edge", edge: { source: source, target: target,selectState:0,val:val } });
+  addEdge(source, target, val) {
+    this.graph.addItem("edge", { source: source, target: target, selectState:0, val:val });
+    this.edges.push({ source: source, target: target, selectState:0, val:val });
+    this.drawStack.push({ type: "edge", edge: { source: source, target: target, selectState:0, val:val } });
   }
+
   /**
    * 在kruskal算法中，所有的边分为3种 已选中,未访问，访问未选中
    * 传入参数1，0，2 代表选中/未访问/访问未选中
@@ -189,8 +202,9 @@ class GraphDraw {
    * }
    */
   setEdge(edge) {
-    this.graph.updateItem(this.findEdge(edge),this.convertEdge(edge));
+    this.graph.updateItem(this.findEdge(edge), this.convertEdge(edge));
   }
+
   /**
    * 在kruskal算法中，节点需要更新的状态有
    * 1.是否选中
@@ -199,12 +213,14 @@ class GraphDraw {
    *  id
    *  root
    *  selectState
+   *  distance (可选)
    * }
    */
   setNode(node){
-    var tmp=this.convertNode(node);
-    tmp.root=node.root;
-    this.graph.updateItem(node.id,tmp)
+    var tmp = this.convertNode(node);
+    tmp.root = node.root;
+    tmp.distance = node.distance !== undefined ? node.distance : tmp.distance;
+    this.graph.updateItem(node.id, tmp);
   }
 
 }
