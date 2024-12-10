@@ -8,9 +8,9 @@ class GraphDraw {
     this.nodes = [];
     this.edges = [];
     this.drawStack = [];
-    this.UNSELECTED_COLOR = "#aaaaaa";
-    this.SELECTED_COLOR = "#00804b";
-    this.UNVISIT_COLOR = "#89CFF0";
+    this.UNSELECTED_COLOR = "#ffffff"; // 修改为白色
+    this.SELECTED_COLOR = "#00804b"; // 绿色
+    this.UNVISIT_COLOR = "#aaaaaa"; // 灰色
     this.graph = this.createGraph(containerId);
   }
 
@@ -111,14 +111,13 @@ class GraphDraw {
     var edgeColor = null;
     switch(edge.selectState){
       case 0:
-        edgeColor = this.UNVISIT_COLOR;
+        edgeColor = this.UNVISIT_COLOR; // 灰色
         break;
       case 1:
-        edgeColor = this.SELECTED_COLOR;
+        edgeColor = this.SELECTED_COLOR; // 绿色
         break;
-      case 2:
-        edgeColor = this.UNSELECTED_COLOR;
-        break;
+      default:
+        edgeColor = this.UNVISIT_COLOR;
     }
     return {
       source: edge.source,

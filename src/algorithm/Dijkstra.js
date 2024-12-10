@@ -74,7 +74,7 @@ export class Dijkstra {
                         this.graphDraw.setEdge({
                             source: edge.source,
                             target: edge.target,
-                            selectState: 1, // 选中状态
+                            selectState: 1, // 选中状态 (绿色)
                             val: edge.val
                         });
                     }
@@ -83,5 +83,47 @@ export class Dijkstra {
         });
 
         return true;
+    }
+
+    /**
+     * 回溯并标记有用的边
+     */
+    markUsefulEdges() {
+        const usefulEdges = new Set();
+
+        // 回溯所有节点的前驱节点，标记有用的边
+        Object.keys(this.previous).forEach(nodeId => {
+            const prev = this.previous[nodeId];
+            if (prev !== null) {
+                // 创建一个唯一的边标识，可以考虑源和目标的组合
+                const edgeKey1 = `${prev}-${nodeId}`;
+                const edgeKey2 = `${nodeId}-${prev}`;
+                usefulEdges.add(edgeKey1);
+                usefulEdges.add(edgeKey2);
+            }
+        });
+
+        // 遍历所有边，标记有用和无用的边
+        this.edges.forEach(edge => {
+            const edgeKey = `${edge.source}-${edge.target}`;
+            const edgeKeyReverse = `${edge.target}-${edge.source}`;
+            if (usefulEdges.has(edgeKey) || usefulEdges.has(edgeKeyReverse)) {
+                // 标记为有用的边（绿色）
+                this.graphDraw.setEdge({
+                    source: edge.source,
+                    target: edge.target,
+                    selectState: 1, // 绿色
+                    val: edge.val
+                });
+            } else {
+                // 标记为无用的边（灰色）
+                this.graphDraw.setEdge({
+                    source: edge.source,
+                    target: edge.target,
+                    selectState: 0, // 灰色
+                    val: edge.val
+                });
+            }
+        });
     }
 }
