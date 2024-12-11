@@ -1,5 +1,9 @@
 # tree-visualize
 
+## collaborator  
+[@wh](https://github.com/zzysssigm)
+[@W1412X](https://github.com/W1412X)
+
 ## Project setup
 ```
 npm install
