@@ -1,5 +1,11 @@
 # tree-visualize
 
+## 预览  
+[点击查看预览](https://w1412x.github.io/Data-Structure-Algorithm-Visualize/dist/)  
+
+## 扩展  
+- 你可以在`algorithm`中添加新的算法并在`pages`中新建页面进行扩展，并将您扩展的算法添加在首页`IndexPage.vue`中  
+
 ## collaborator  
 [@wh](https://github.com/zzysssigm)
 [@W1412X](https://github.com/W1412X)
